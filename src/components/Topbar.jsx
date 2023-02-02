@@ -1,17 +1,23 @@
 import React, { useState } from "react";
 
 export default function Topbar() {
-  const [info, setInfo] = useState({
-    search: "",
-    user: {
-      name: "Kunal Kashyap",
-      username: "kunal.kashyap",
-    },
+ const [search, setSearch] = useState("");
+  const handleSearch = async (target) => {
+    setSearch(target.target.value);
+  };
+
+  const [userInformation, setUserInformation] = useState({
+    name: "Kunal Kashyap",
+    username: "kunal.kashyap",
+    email: "mail@example.com",
   });
 
-  const handleSearch = async (target) => {
-    setInfo({
-      search: target.value,
+  const handleUserInformation = async (target) => {
+    setUserInformation(prevState => {
+      return {
+        ...prevState,
+        name: "NomNom",
+      };
     });
   };
 
@@ -25,13 +31,13 @@ export default function Topbar() {
                 <input
                   onChange={handleSearch}
                   type="text"
-                  value={info.search}
+                  value={search}
                   placeholder="Search Content"
                   className="focus:outline-none w-full bg-gray-100 px-2 py-1"
                 />
               </div>
               <div>
-                <button className="flex items-center">
+                <button onClick={handleUserInformation} className="flex items-center">
                   <svg
                     className="w-6 h-6"
                     xmlns="http://www.w3.org/2000/svg"
@@ -51,7 +57,7 @@ export default function Topbar() {
             </div>
             <div className="flex gap-x-4 items-center justify-center cursor-pointer">
               <div className="text-lg ">
-                <p>{info.user.name}</p>
+                <p>{userInformation.name}</p>
               </div>
               <div className="">
                 <img
