@@ -9,6 +9,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  username: {
+    type: String,
+    required: true,
+    unqiue: true,
+    minlength: 3,
+  },
   email: {
     type: String,
     required: true,
@@ -17,6 +23,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+    min: 8,
+    max: 256,
   },
   profilePic: {
     type: String,
