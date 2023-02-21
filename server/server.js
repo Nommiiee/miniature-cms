@@ -2,7 +2,6 @@ import express from "express";
 import mongoose, { mongo } from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import multer from "multer";
 import helmet from "helmet";
 const app = express();
 
@@ -22,16 +21,20 @@ app.use(
   })
 );
 
+const mongoPath = "mongodb://127.0.0.1:27017/miniature-CMS";
+mongoose.set("strictQuery", false);
 mongoose
-  .connect(
-    process.env.MONGO_PATH || "mongodb://localhost:27017/express-mongo",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
-  .then(() => {
-    app.listen(process.env.PORT, () => console.log("Starting Server"));
+  .connect(process.env.MONGO_PATH || mongoPath, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
-  .catch((err) => console.log(err))
-  .finally(() => console.log("Connected to DB && Server is running"));
+  .then(() => {
+    app.listen(process.env.PORT || 3001, () => {
+      console.log(
+        `Database Connect & Server is running on port ${process.env.PORT}`
+      );
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
