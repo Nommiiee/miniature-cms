@@ -1,7 +1,7 @@
-import User from "../models/user";
-import mongoose from "mongoose";
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
+const User = mongoose.model("User");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const mongoose = require("mongoose");
 
 passport.use(
   new LocalStrategy(function (username, password, done) {
@@ -22,5 +22,17 @@ passport.use(
         return done(null, user);
       }
     );
+
+    passport.serializeUser(function (user, done) {
+      done(null, user.id);
+    });
+
+    passport.deserializeUser(function (id, done) {
+      User.findById(id, function (err, user) {
+        done(err, user);
+      });
+    });
   })
 );
+
+module.exports = passport;
