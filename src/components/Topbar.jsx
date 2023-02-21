@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 export default function Topbar() {
- const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("");
   const handleSearch = async (target) => {
     setSearch(target.target.value);
   };
@@ -13,7 +13,7 @@ export default function Topbar() {
   });
 
   const handleUserInformation = async (target) => {
-    setUserInformation(prevState => {
+    setUserInformation((prevState) => {
       return {
         ...prevState,
         name: "NomNom",
@@ -37,7 +37,10 @@ export default function Topbar() {
                 />
               </div>
               <div>
-                <button onClick={handleUserInformation} className="flex items-center">
+                <button
+                  onClick={handleUserInformation}
+                  className="flex items-center"
+                >
                   <svg
                     className="w-6 h-6"
                     xmlns="http://www.w3.org/2000/svg"
