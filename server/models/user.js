@@ -57,7 +57,7 @@ const userSchema = new mongoose.Schema(
 );
 
 const User = mongoose.model("User", userSchema);
-// User.createIndexes(({ username: 1 }, { unique: true }));
-// User.createIndexes(({ email: 1 }, { unique: true }));
+User.createIndexes(({ username: 1 }, { unique: true }));
+User.createIndexes(({ email: 1 }, { unique: true }));
 
 module.exports = User;
