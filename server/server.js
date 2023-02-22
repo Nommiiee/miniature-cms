@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
-
+const bodyParser = require("body-parser");
+const User = require("./models/user");
 const app = express();
 
 //configuration
@@ -22,6 +23,9 @@ app.use(
     limit: "10mb",
   })
 );
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 // server startup and database connection
 
 mongoose.set("strictQuery", false);

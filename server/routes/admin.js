@@ -11,9 +11,19 @@ router.get("/allUser", async (req, res, next) => {
     console.log(error);
   }
 });
+
 router.delete("/allUser", async (req, res, next) => {
   try {
     const allUser = await User.deleteMany();
+    res.json(allUser);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.delete("/drop", async (req, res, next) => {
+  try {
+    const allUser = await User.collection.drop();
     res.json(allUser);
   } catch (error) {
     console.log(error);

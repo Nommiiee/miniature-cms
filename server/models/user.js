@@ -17,12 +17,18 @@ const userSchema = new mongoose.Schema(
       required: true,
       unqiue: true,
       minlength: 3,
+      index: {
+        unique: true,
+      },
     },
     email: {
       type: String,
       required: true,
       unqiue: true,
       min: 6,
+      index: {
+        unique: true,
+      },
     },
     password: {
       type: String,
@@ -47,10 +53,11 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    autoIndex: true,
   }
 );
 
 const User = mongoose.model("User", userSchema);
+// User.createIndexes(({ username: 1 }, { unique: true }));
+// User.createIndexes(({ email: 1 }, { unique: true }));
 
 module.exports = User;
