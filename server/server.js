@@ -22,12 +22,11 @@ app.use(
     limit: "10mb",
   })
 );
-const mongoPath = "mongodb://127.0.0.1:27017/miniature-CMS";
-mongoose.set("strictQuery", false);
-
 // server startup and database connection
+
+mongoose.set("strictQuery", false);
 mongoose
-  .connect(process.env.MONGO_PATH || mongoPath, {
+  .connect(process.env.MONGO_PATH, {
     autoIndex: true,
   })
   .then(() => {

@@ -9,6 +9,7 @@ router.post("/register", (req, res) => {
   try {
     const { username, email, password, firstName, lastName } = req.body;
 
+
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
 
