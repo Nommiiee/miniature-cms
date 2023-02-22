@@ -13,15 +13,16 @@ const userSchema = new mongoose.Schema({
   },
   username: {
     type: String,
-    required: true,
     unqiue: true,
+    required: true,
+    dropDups: true,
     minlength: 3,
   },
   email: {
     type: String,
-    required: true,
     unqiue: true,
-    min: 6,
+    required: true,
+    dropDups: true,
   },
   password: {
     type: String,
@@ -42,6 +43,17 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "user",
     required: true,
+  },
+
+  timestamp: {
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
 });
 
