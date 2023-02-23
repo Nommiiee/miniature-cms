@@ -56,7 +56,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.pre("save", function (next) {
+userSchema.pre("save", async function (next) {
   const user = this;
   user.firstName = titleCase(user.firstName);
   user.lastName = titleCase(user.lastName);
@@ -66,7 +66,7 @@ userSchema.pre("save", function (next) {
   if (this.isModified("password") || this.isNew) {
     bcrypt.genSalt(12, function (saltErr, salt) {
       if (saltErr) return next(saltErr);
-      bcrypt.hash(user.password.trim()  , salt, function (hashErr, hash) {
+      bcrypt.hash(user.password.trim(), salt, function (hashErr, hash) {
         if (hashErr) return next(hashErr);
         user.password = hash;
         next();

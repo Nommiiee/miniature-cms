@@ -81,7 +81,7 @@ router.post("/register", async (req, res, next) => {
       .then((user) => {
         res
           .status(200)
-          .json({ message: "Registration Successful!", err: false });
+          .json({ message: "Registration Successful!", user, err: false });
         next();
       })
       .catch((error) => {
