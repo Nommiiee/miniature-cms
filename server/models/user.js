@@ -46,6 +46,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
+      enum: ["user", "admin", "moderator", "writer", "developer"],
       default: "user",
       required: true,
     },
@@ -57,16 +58,15 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre("save", function (next) {
   const user = this;
-
   user.firstName = titleCase(user.firstName);
   user.lastName = titleCase(user.lastName);
-  user.username = user.username.toLowerCase();
-  user.email = user.email.toLowerCase();
+  user.username = user.username.toLowerCase().trim();
+  user.email = user.email.toLowerCase().replace(/\+.+@/, "@").trim();
 
   if (this.isModified("password") || this.isNew) {
     bcrypt.genSalt(12, function (saltErr, salt) {
       if (saltErr) return next(saltErr);
-      bcrypt.hash(user.password, salt, function (hashErr, hash) {
+      bcrypt.hash(user.password.trim()  , salt, function (hashErr, hash) {
         if (hashErr) return next(hashErr);
         user.password = hash;
         next();
@@ -84,17 +84,11 @@ const User = mongoose.model("User", userSchema);
 
 module.exports = User;
 
-async function passwordEncryption(password) {
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  return hashedPassword;
-}
-
 function titleCase(str) {
   const splitStr = str.toLowerCase().split(" ");
   for (let i = 0; i < splitStr.length; i++) {
     splitStr[i] =
       splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
   }
-  return splitStr.join(" ");
+  return splitStr.join(" ").trim();
 }
