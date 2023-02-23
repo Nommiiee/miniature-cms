@@ -5,8 +5,10 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
-const User = require("./models/user");
 const app = express();
+
+// MongoDB Models
+const User = require("./models/user");
 
 //configuration
 dotenv.config();
@@ -30,9 +32,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.set("strictQuery", false);
 mongoose
-  .connect(process.env.MONGO_PATH, {
-    autoIndex: true,
-  })
+  .connect(
+    process.env.MONGO_PATH || "mongodb://127.0.0.1:27017/miniature-CMS",
+    {
+      autoIndex: true,
+    }
+  )
   .then(() => {
     app.listen(process.env.PORT || 3001, () => {
       console.log(
@@ -44,19 +49,29 @@ mongoose
     console.log(err);
   });
 
-//routes and middleware
-app.get("/", async (req, res, next) => {
-  try {
-    res.send("Hello World");
-  } catch (error) {
-    console.log(error);
-  }
-});
+if (process.env.MODE === "production") {
+  mongoose.connection.on("connected", () => {
+    User.ensureIndexes((err) => {
+      if (err) console.log(err);
+      console.log("Indexes created");
+    });
+  });
+}
+
 const authentication = require("./auth/authentication");
 const admin = require("./routes/admin");
 
 app.use("/auth", authentication);
 app.use("/admin", admin);
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "localhost");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 app.use("*", (req, res) => {
   try {
@@ -66,11 +81,10 @@ app.use("*", (req, res) => {
   }
 });
 
-app.use(async (req, res, next) => {
-  try {
-    res.status(500).send("SERVER ERROR");
-  } catch (error) {
-    console.log(error);
+app.use((err, req, res, next) => {
+  if (err) {
+    console.log(err);
+    res.status(500).send("Internal Server Error");
   }
 });
 

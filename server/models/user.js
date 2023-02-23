@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
@@ -17,18 +18,16 @@ const userSchema = new mongoose.Schema(
       required: true,
       unqiue: true,
       minlength: 3,
-      index: {
-        unique: true,
-      },
+      index: true,
+      unique: true,
     },
     email: {
       type: String,
       required: true,
       unqiue: true,
       min: 6,
-      index: {
-        unique: true,
-      },
+      index: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -56,8 +55,46 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+userSchema.pre("save", function (next) {
+  const user = this;
+
+  user.firstName = titleCase(user.firstName);
+  user.lastName = titleCase(user.lastName);
+  user.username = user.username.toLowerCase();
+  user.email = user.email.toLowerCase();
+
+  if (this.isModified("password") || this.isNew) {
+    bcrypt.genSalt(12, function (saltErr, salt) {
+      if (saltErr) return next(saltErr);
+      bcrypt.hash(user.password, salt, function (hashErr, hash) {
+        if (hashErr) return next(hashErr);
+        user.password = hash;
+        next();
+      });
+    });
+  } else {
+    return next();
+  }
+});
+
+userSchema.index({ username: 1 }, { unique: true });
+userSchema.index({ email: 1 }, { unique: true });
+
 const User = mongoose.model("User", userSchema);
-User.createIndexes(({ username: 1 }, { unique: true }));
-User.createIndexes(({ email: 1 }, { unique: true }));
 
 module.exports = User;
+
+async function passwordEncryption(password) {
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  return hashedPassword;
+}
+
+function titleCase(str) {
+  const splitStr = str.toLowerCase().split(" ");
+  for (let i = 0; i < splitStr.length; i++) {
+    splitStr[i] =
+      splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+  }
+  return splitStr.join(" ");
+}
