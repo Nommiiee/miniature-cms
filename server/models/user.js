@@ -50,6 +50,10 @@ const userSchema = new mongoose.Schema(
       default: "user",
       required: true,
     },
+    articles: {
+      type: Array,
+      default: [],
+    },
   },
   {
     timestamps: true,

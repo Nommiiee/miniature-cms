@@ -1,11 +1,20 @@
 // convert to requries
 const express = require("express");
+const session = require("express-session");
+const passport = require("passport");
+const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
+const mongoStore = require("connect-mongo");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const app = express();
+
+const MONGO_PATH =
+  process.env.mongo_PATH || "mongodb://127.0.0.1:27017/miniature-CMS";
+const PORT = process.env.PORT || 3001;
+const sizeLimit = "20mb";
 
 // MongoDB Models
 const User = require("./models/user");
@@ -16,30 +25,52 @@ app.use(cors());
 app.use(helmet());
 app.use(
   express.json({
-    limit: "10mb",
+    limit: sizeLimit,
   })
 );
 app.use(
   express.urlencoded({
     extended: true,
-    limit: "10mb",
+    limit: sizeLimit,
   })
 );
-app.use(bodyParser.json());
+app.use(
+  session({
+    secret: process.env.SECRET,
+    resave: false,
+    name: "miniature-id",
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+    },
+    store: mongoStore.create({
+      mongoUrl: MONGO_PATH,
+    }),
+  })
+);
+// cookie and body parser
+app.use(cookieParser());
+app.use(
+  bodyParser.json({
+    limit: sizeLimit,
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// passport
+app.use(passport.session());
+app.use(passport.session());
 
 // server startup and database connection
 
 mongoose.set("strictQuery", false);
 mongoose
-  .connect(
-    process.env.MONGO_PATH || "mongodb://127.0.0.1:27017/miniature-CMS",
-    {
-      autoIndex: true,
-    }
-  )
+  .connect(MONGO_PATH, {
+    autoIndex: true,
+  })
   .then(() => {
-    app.listen(process.env.PORT || 3001, () => {
+    app.listen(PORT, () => {
       console.log(
         `Database Connect & Server is running on port ${process.env.PORT}`
       );
@@ -58,28 +89,29 @@ if (process.env.MODE === "production") {
   });
 }
 
+//Routes and middleware
 const authentication = require("./auth/authentication");
 const admin = require("./routes/admin");
 
 app.use("/auth", authentication);
 app.use("/admin", admin);
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "localhost");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+// app.use(function (req, res, next) {
+//  res.header("Access-Control-Allow-Origin", "localhost");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 
-app.use("*", (req, res) => {
-  try {
-    res.status(404).send("NOT FOUND");
-  } catch (error) {
-    console.log(error);
-  }
-});
+// app.use("*", (req, res) => {
+//   try {
+//     res.status(404).send("NOT FOUND");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 
 app.use((err, req, res, next) => {
   if (err) {

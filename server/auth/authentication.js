@@ -2,10 +2,18 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const validator = require("validator");
-const User = require("../models/user");
+
+router.post("/login", function (req, res, next) {
+  passport.authenticate("local", {
+    successReturnToOrRedirect: "/",
+    failureRedirect: "/login",
+    failureMessage: true,
+  });
+});
 
 router.post("/register", async (req, res, next) => {
   try {
+    const User = require("../models/user");
     const { username, email, password, firstName, lastName } = req.body;
 
     if (!username || !email || !password || !firstName || !lastName) {
@@ -114,18 +122,16 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
-async function testRegistration() {
-  const req = {
-    body: {
-      username: "nomnom",
-      password: "12345678",
-      email: "nom@nomnom1.com",
-      firstName: "NoaAWdsxm",
-      lastName: "Nom",
-      isAdmin: "false",
-      role: "user",
-    },
-  };
-}
+router.get("/logout", function (req, res) {
+  req.logout();
+  req.session.destroy((err) => {
+    res.clearCookie("miniature-id");
+    res.redirectWithMessage(
+      200,
+      "You have successfully logged out",
+      "http://localhost:3000"
+    );
+  });
+});
 
 module.exports = router;
