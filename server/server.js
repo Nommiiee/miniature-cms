@@ -10,6 +10,8 @@ const cors = require("cors");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const app = express();
+const local = require("./auth/strategies/local");
+const { serializeUser, deserializeUser } = require("./auth/passport-config");
 
 const MONGO_PATH =
   process.env.mongo_PATH || "mongodb://127.0.0.1:27017/miniature-CMS";
@@ -38,8 +40,8 @@ app.use(
   session({
     secret: process.env.SECRET,
     resave: false,
-    name: "miniature-id",
     saveUninitialized: false,
+    name: "miniature-id",
     cookie: {
       httpOnly: true,
       secure: false,
@@ -59,8 +61,11 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // passport
+app.use(passport.initialize());
+local.injectStrategy();
 app.use(passport.session());
-app.use(passport.session());
+passport.serializeUser(serializeUser);
+passport.deserializeUser(deserializeUser);
 
 // server startup and database connection
 

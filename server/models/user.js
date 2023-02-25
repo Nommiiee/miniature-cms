@@ -62,22 +62,22 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre("save", async function (next) {
   const user = this;
-  user.firstName = titleCase(user.firstName);
-  user.lastName = titleCase(user.lastName);
-  user.username = user.username.toLowerCase().trim();
-  user.email = user.email.toLowerCase().replace(/\+.+@/, "@").trim();
 
-  if (this.isModified("password") || this.isNew) {
-    bcrypt.genSalt(12, function (saltErr, salt) {
-      if (saltErr) return next(saltErr);
-      bcrypt.hash(user.password.trim(), salt, function (hashErr, hash) {
-        if (hashErr) return next(hashErr);
-        user.password = hash;
-        next();
-      });
-    });
-  } else {
+  if (!user.isModified("password") || !user.isNew) {
     return next();
+  }
+
+  if (!user.isModified("password") || !user.isNew) {
+    return next();
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(12);
+    const hash = await bcrypt.hash(user.password.trim(), salt);
+    user.password = hash;
+    next();
+  } catch (err) {
+    next(err);
   }
 });
 
@@ -87,12 +87,3 @@ userSchema.index({ email: 1 }, { unique: true });
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
-
-function titleCase(str) {
-  const splitStr = str.toLowerCase().split(" ");
-  for (let i = 0; i < splitStr.length; i++) {
-    splitStr[i] =
-      splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
-  }
-  return splitStr.join(" ").trim();
-}

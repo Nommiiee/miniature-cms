@@ -3,12 +3,32 @@ const passport = require("passport");
 const router = express.Router();
 const validator = require("validator");
 
+// passportJS Authentication login route
 router.post("/login", function (req, res, next) {
-  passport.authenticate("local", {
-    successReturnToOrRedirect: "/",
-    failureRedirect: "/login",
-    failureMessage: true,
-  });
+  passport.authenticate("local", function (err, user, info) {
+    if (err) throw err;
+    if (!user) {
+      return res.status(500).json({
+        message: "Invalid username or password",
+        err: true,
+      });
+    }
+    req.logIn(user, function (err) {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          message: "Invalid username or password",
+          err: true,
+        });
+      }
+
+      res.status(200).json({
+        message: "You have successfully logged in",
+        user,
+        err: false,
+      });
+    });
+  })(req, res, next);
 });
 
 router.post("/register", async (req, res, next) => {
@@ -77,11 +97,17 @@ router.post("/register", async (req, res, next) => {
     });
 
     const newUser = await User({
-      firstName: validator.blacklist(firstName, "0123456789!@#$%^&*()_+<>[] /"),
-      lastName: validator.blacklist(lastName, "0123456789!@#$%^&*()_+<>[] /"),
-      username: username.replace(/\s/g, ""),
-      email: normalizeEmail.replace(/\s/g, ""),
-      password: password.replace(/\s/g, ""),
+      firstName: validator.blacklist(
+        firstName.toLowerCase(),
+        "0123456789!@#$%^&*()_+<>[] /"
+      ),
+      lastName: validator.blacklist(
+        lastName.toLowerCase(),
+        "0123456789!@#$%^&*()_+<>[] /"
+      ),
+      username: username.replace(/\s/g, "").toLowerCase(),
+      email: normalizeEmail.replace(/\s/g, "").toLowerCase(),
+      password: password.replace(/\s/g, "").trim(),
     });
 
     newUser
