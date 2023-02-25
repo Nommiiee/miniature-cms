@@ -148,16 +148,21 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
-router.get("/logout", function (req, res) {
-  req.logout();
-  req.session.destroy((err) => {
-    res.clearCookie("miniature-id");
-    res.redirectWithMessage(
-      200,
-      "You have successfully logged out",
-      "http://localhost:3000"
-    );
-  });
+router.get("/logout", async function (req, res) {
+  try {
+    console.log(req.session);
+    req.logout(function (err) {
+      if (err) throw err;
+    });
+    req.session.destroy((err) => {
+      if (err) throw err;
+      res.clearCookie("miniature-id");
+      res.json({ message: "Session destroyed" });
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error logging out" });
+  }
 });
 
 module.exports = router;

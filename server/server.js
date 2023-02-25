@@ -1,18 +1,29 @@
 // convert to requries
 const express = require("express");
 const session = require("express-session");
-const passport = require("passport");
-const cookieParser = require("cookie-parser");
+
+// Database and Session Store
 const mongoose = require("mongoose");
 const mongoStore = require("connect-mongo");
+
+// security and safety
 const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
+
+// parsers for cookies and body
+const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-const app = express();
+
+// passport and passport strategies
+const passport = require("passport");
 const local = require("./auth/strategies/local");
 const { serializeUser, deserializeUser } = require("./auth/passport-config");
 
+// Express App
+const app = express();
+
+// Constants
 const MONGO_PATH =
   process.env.mongo_PATH || "mongodb://127.0.0.1:27017/miniature-CMS";
 const PORT = process.env.PORT || 3001;
@@ -23,19 +34,6 @@ const User = require("./models/user");
 
 //configuration
 dotenv.config();
-app.use(cors());
-app.use(helmet());
-app.use(
-  express.json({
-    limit: sizeLimit,
-  })
-);
-app.use(
-  express.urlencoded({
-    extended: true,
-    limit: sizeLimit,
-  })
-);
 app.use(
   session({
     secret: process.env.SECRET,
@@ -48,7 +46,21 @@ app.use(
     },
     store: mongoStore.create({
       mongoUrl: MONGO_PATH,
+      autoRemove: "native",
     }),
+  })
+);
+app.use(cors());
+app.use(helmet());
+app.use(
+  express.json({
+    limit: sizeLimit,
+  })
+);
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: sizeLimit,
   })
 );
 // cookie and body parser
@@ -98,25 +110,16 @@ if (process.env.MODE === "production") {
 const authentication = require("./auth/authentication");
 const admin = require("./routes/admin");
 
-app.use("/auth", authentication);
 app.use("/admin", admin);
+app.use("/auth", authentication);
 
-// app.use(function (req, res, next) {
-//  res.header("Access-Control-Allow-Origin", "localhost");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   next();
-// });
-
-// app.use("*", (req, res) => {
-//   try {
-//     res.status(404).send("NOT FOUND");
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
+app.use("*", (req, res) => {
+  try {
+    res.status(404).send("NOT FOUND");
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 app.use((err, req, res, next) => {
   if (err) {
