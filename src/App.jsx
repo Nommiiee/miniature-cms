@@ -1,16 +1,12 @@
 import "./App.css";
 import Sidebar from "./components/Sidebar";
-import Dashboard from "./components/Dashboard";
+import Login from "./pages/login/Login";
 
 function App() {
   return (
     <>
       <div className="w-full flex">
-        <Sidebar />
-        <div
-          id="viewPort"
-          className="w-full h-screen overflow-y-scroll overflow-x-hidden"
-        ></div>
+        <Login />
       </div>
     </>
   );
