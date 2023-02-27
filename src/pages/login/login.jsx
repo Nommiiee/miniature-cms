@@ -5,7 +5,7 @@ export default function login() {
   return (
     <>
       <div className="w-full h-screen bg-blue-200 flex justify-center items-center">
-        <div className="w-96 h-[700px] bg-blue-100 p-4 rounded-lg shadow-2xl">
+        <div className="w-96 h-4/6 xl:h-[700px] bg-blue-100 p-4 rounded-lg shadow-2xl">
           <div className="w-full h-full flex flex-col items-center justify-between gap-4">
             <div className="w-full text-center">
               <h1 className="text-3xl font-semibold text-center">
