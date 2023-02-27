@@ -5,8 +5,8 @@ export default function login() {
   return (
     <>
       <div className="w-full h-screen bg-blue-200 flex justify-center items-center">
-        <div className="w-96 h-5/6 bg-blue-100 p-4 rounded-lg shadow-2xl">
-          <div className="w-full h-full flex flex-col items-center justify-between">
+        <div className="w-96 h-[700px] bg-blue-100 p-4 rounded-lg shadow-2xl">
+          <div className="w-full h-full flex flex-col items-center justify-between gap-4">
             <div className="w-full text-center">
               <h1 className="text-3xl font-semibold text-center">
                 Miniature CMS
@@ -19,7 +19,7 @@ export default function login() {
                   <label className="pb-2 text-xl" htmlFor="username">
                     Username
                   </label>
-                  <div className="p-1 w-full flex bg-white items-center ">
+                  <div className="p-1 w-full flex bg-white items-center rounded-lg shadow-md">
                     <input
                       type="text"
                       className="p-2 w-full focus:outline-[0.5px] focus:outline-gray-00 "
@@ -45,7 +45,7 @@ export default function login() {
                   <label className="pb-2 text-xl" htmlFor="password">
                     Password
                   </label>
-                  <div className="p-1 w-full flex bg-white items-center ">
+                  <div className="p-1 w-full flex bg-white items-center rounded-lg shadow-md">
                     <input
                       type="password"
                       className="p-2 w-full focus:outline-[0.5px] focus:outline-gray-00 "
