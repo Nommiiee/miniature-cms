@@ -10,9 +10,7 @@ function App() {
         <div
           id="viewPort"
           className="w-full h-screen overflow-y-scroll overflow-x-hidden"
-        >
-          <Dashboard />
-        </div>
+        ></div>
       </div>
     </>
   );
