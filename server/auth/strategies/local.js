@@ -16,7 +16,7 @@ function injectStrategy() {
       async (req, username, password, done) => {
         try {
           // Find the user associated with the email provided by the user
-          const user = await User.findOne({ username: username });
+          const user = await User.findOne({ username: username.toLowerCase() });
 
           // If the user doesn't exist or the password is incorrect
           if (!user || !(await bcrypt.compare(password, user.password))) {

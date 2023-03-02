@@ -1,10 +1,42 @@
 import React from "react";
+import Popup from "../../components/Popup";
+import { useState } from "react";
+import { compareSync } from "bcrypt";
 
-export default function login() {
+export default function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    const URL = "http://localhost:3000/auth/login";
+    const response = fetch(URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+      }),
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    if (response.status === 200) {
+      console.log(response);
+      console.log("success");
+    } else {
+      console.log("error");
+    }
+  };
   return (
     <>
-      <div className="w-full h-screen bg-blue-200 flex justify-center items-center">
-        <div className="w-96 h-5/6 max-h-[700px] bg-blue-100 p-4 rounded-md shadow-2xl flex items-center justify-center">
+      <div className="w-full h-screen bg-blue-200 flex justify-center items-center ">
+        <div className="w-96 h-5/6 max-h-[700px] bg-blue-100 p-4 rounded-md shadow-2xl flex items-center justify-center relative">
           <div className="w-11/12 flex items-center justify-center h-full py-10">
             <div className="w-full h-full flex flex-col items-center justify-between gap-4 ">
               <div className="w-full text-center">
@@ -17,7 +49,7 @@ export default function login() {
                 <form return="false">
                   <div className="w-full flex flex-col">
                     <label
-                      className="pb-2 text-xl lato font-medium"
+                      className="pb-2 font-medium text-gray-800"
                       htmlFor="username"
                     >
                       Username
@@ -45,7 +77,10 @@ export default function login() {
                     </div>
                   </div>
                   <div className="w-full flex flex-col pt-4">
-                    <label className="pb-2 text-xl" htmlFor="password">
+                    <label
+                      className="pb-2 font-medium text-gray-800"
+                      htmlFor="password"
+                    >
                       Password
                     </label>
                     <div className="flex w-full relative items-center justify-end ">
