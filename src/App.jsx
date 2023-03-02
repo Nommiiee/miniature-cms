@@ -7,7 +7,8 @@ function App() {
   return (
     <>
       <div className="w-full flex">
-        <Register />
+        {/* <Register /> */}
+        <Login />
       </div>
     </>
   );
